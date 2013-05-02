@@ -2,14 +2,34 @@ require 'spec_helper'
 
 describe Rack::Auth::OCTanner do
 
-  let(:token_string){ '1234567890' }
-  let(:user_info){ { 'user_id' => '1', 'company_id' => '2', 'application_id' => '3', 'scopes' => [ 'foo' ] } }
-
   let(:app){ lambda { |env| [200, {}, []] } }
   let(:middleware){ Rack::Auth::OCTanner.new app, { client_id: '1', client_secret: 'secret' } }
   let(:mock_request){ Rack::MockRequest.new(middleware) }
 
+  let(:token_string){ '1234567890' }
+  let(:user_info){ { 'user_id' => '1', 'company_id' => '2', 'application_id' => '3', 'scopes' => [ 'foo' ] } }
+
+  let(:user_info_url){ 'https://api.octanner.com/api/userinfo' }
+  let(:user_info_ok){ { status: 200, body: user_info.to_json } }
+  let(:user_info_unauthorized){ { status: 401 } }
+
+
   subject{ middleware }
+
+
+  describe '#validate_token' do
+
+    before :each do
+      @request = OpenStruct.new
+      @request.params = {}
+      @request.env = {}
+    end
+
+    it 'should validate and return a valid user response' do
+      token = double('token', get: double('response', body: user_info.to_json))
+      subject.validate_token(token).should eq user_info
+    end
+  end
 
 
   describe '#token_from_request' do
