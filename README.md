@@ -22,10 +22,12 @@ Then run the bundle command to install it.
 Add the following to your config/applications.rb file
 
 ```ruby
-config.middleware.use Rack::Auth::OCTanner, client_id: 'some_id', client_secret: 'some_secret'
+class Application < Rails::Application
+  config.middleware.use Rack::Auth::OCTanner, client_id: 'some_id', client_secret: 'some_secret'
+end
 ```
 
-The `client_id` and `client_secret` are the credentials used to access the OAuth2 provider service to validate tokens and retrieve user information.
+The `client_id` and `client_secret` are the credentials used to access the OAuth2 provider service to validate tokens and retrieve user information.  These two parameters are required.
 
 Other optional parameters that can be included are:
 
