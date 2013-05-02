@@ -29,12 +29,6 @@ module Rack
       end
 
 
-      def token_from_request(request)
-        token_string = token_string_from_request request
-        access_token = OAuth2::AccessToken.new oauth2_client, token_string
-      end
-
-
       # Presently, this does a call out to the OAuth2 provider to validate
       # and retrieve user information.  In the future, this information may be
       # encoded into the token itself.
@@ -44,12 +38,19 @@ module Rack
       end
 
 
-      private
+      def token_from_request(request)
+        token_string = token_string_from_request request
+        access_token = OAuth2::AccessToken.new oauth2_client, token_string
+      end
+
 
       def token_string_from_request(request)
         return nil unless request
         token_string_from_params(request.params) || token_string_from_headers(request.env)
       end
+
+
+      private
 
 
       def token_string_from_params(params = {})
