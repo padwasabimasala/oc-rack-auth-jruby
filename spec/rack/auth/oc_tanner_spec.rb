@@ -1,10 +1,18 @@
 require 'spec_helper'
 
+def mock_env
+  {
+    'rack.session' => {},
+    'rack.input' => StringIO.new('test=true')
+  }
+end
+
+
 describe Rack::Auth::OCTanner do
 
   let(:app){ lambda { |env| [200, {}, []] } }
-  let(:middleware){ Rack::Auth::OCTanner.new app, { client_id: '1', client_secret: 'secret' } }
-  let(:mock_request){ Rack::MockRequest.new(middleware) }
+  let(:options){ { client_id: '1', client_secret: 'secret' } }
+  let(:middleware){ Rack::Auth::OCTanner.new app, options }
 
   let(:token_string){ '1234567890' }
   let(:user_info){ { 'user_id' => '1', 'company_id' => '2', 'application_id' => '3', 'scopes' => [ 'foo' ] } }
@@ -15,6 +23,41 @@ describe Rack::Auth::OCTanner do
 
 
   subject{ middleware }
+
+
+  describe '#initialize' do
+
+    it 'assigns the app variable' do
+      subject.instance_variable_get( :@app ).should eq app
+    end
+
+    it 'assigns the options variable' do
+      subject.instance_variable_get( :@options ).should eq options
+    end
+
+  end
+
+
+  describe '#call' do
+
+    it 'should set env objects if authentication succeeds' do
+      stub_request(:any, user_info_url).to_return(user_info_ok)
+      env = mock_env
+      subject.call(env)
+      env['oauth2_token_data'].should eq user_info
+      env['oauth2_token'].should be_kind_of OAuth2::AccessToken
+    end
+
+    it 'should set nil env objects if authentication fails' do
+      stub_request(:any, user_info_url).to_return(user_info_unauthorized)
+      env = mock_env
+      subject.call(env)
+      env['oauth2_token_data'].should be_nil
+      env['oauth2_token'].should be_nil
+    end
+
+  end
+
 
 
   describe '#validate_token' do

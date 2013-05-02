@@ -21,7 +21,7 @@ module Rack
         # For now, note the error, set the token information
         # to nil, and send the request along; upstream will handle it
       rescue StandardError => e
-        # p "Failed to authorize OAuth2:  #{e.message}"
+        # p "Rack::Auth::OCTanner failed to authorize:  #{e.message}"
         # return [401, {},[]]
         env['oauth2_token_data'] = nil
         env['oauth2_token'] = nil
