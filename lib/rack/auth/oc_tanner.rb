@@ -1,10 +1,8 @@
-require 'rack-octanner-auth/version'
-
 require 'oauth2'
 
 module Rack
-  module Octanner
-    class Auth
+  module Auth
+    class OCTanner
 
       def initialize(app, options = {})
         @app = app
@@ -28,7 +26,6 @@ module Rack
 
       def token_from_request(request)
         token_string = token_string_from_request request
-
         access_token = OAuth2::AccessToken.new oauth2_client, token_string
       end
 

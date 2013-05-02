@@ -2,7 +2,7 @@ require 'simplecov'
 SimpleCov.start
 
 
-require 'rack-octanner-auth'
+require 'rack/auth/oc_tanner'
 require 'ostruct'
 require 'json'
 
@@ -11,10 +11,4 @@ include WebMock::API
 
 RSpec.configure do |config|
   config.order = "random"
-end
-
-
-Rack::Octanner::Auth.configure do |config|
-  config.oauth_id = '1234'
-  config.oauth_secret = 'secret'
 end
