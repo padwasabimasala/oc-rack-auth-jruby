@@ -43,3 +43,5 @@ The `Rack::Auth::OCTanner` middleware will look for an OAuth2 token in the reque
 `env['oauth2_token']` - An `OAuth2::AccessToken` object, which can be used to make further requests to other protected services
 
 `env['oauth2_token_data']` - A `Hash` of basic information representing the user associated with the token.  This may include the user's ID, their associated company ID, and any associated OAuth2 scopes.  The actual content will depend on the configuration of the OAuth2 provider service.
+
+If the authentication fails, both of these values will be set to `nil`.
