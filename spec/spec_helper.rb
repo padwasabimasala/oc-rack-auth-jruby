@@ -2,7 +2,7 @@ require 'simplecov'
 SimpleCov.start
 
 
-require 'rack/auth/oc_tanner'
+require 'rack-auth-oc_tanner'
 require 'ostruct'
 require 'json'
 
