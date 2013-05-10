@@ -19,4 +19,5 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'rack'
   gem.add_dependency 'oauth2'
+  gem.add_dependency 'simple-secrets'
 end
