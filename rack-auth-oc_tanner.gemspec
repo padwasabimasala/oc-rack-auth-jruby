@@ -5,7 +5,7 @@ Gem::Specification.new do |gem|
   gem.authors = ['Jay Wagnon']
   gem.email = ['jay.wagnon@octanner.com']
 
-  gem.description = %q{Rack module for handling OC Tanner OAuth2 tokens.}
+  gem.description = %q{Rack module for handling OC Tanner authentication tokens.}
   gem.summary = gem.description
   gem.homepage = 'https://github.com/octanner/rack-auth-oc_tanner'
 
@@ -18,6 +18,5 @@ Gem::Specification.new do |gem|
   gem.test_files = %w[]
 
   gem.add_dependency 'rack'
-  gem.add_dependency 'oauth2'
-  gem.add_dependency 'simple-secrets'
+  gem.add_dependency 'simple-secrets', '~> 1.0.0'
 end

@@ -1,5 +1,3 @@
-require 'oauth2'
-
 module Rack
   module Auth
     class OCTanner
