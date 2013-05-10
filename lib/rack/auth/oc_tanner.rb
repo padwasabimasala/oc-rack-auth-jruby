@@ -13,10 +13,10 @@ module Rack
       def call(env)
         request = Rack::Request.new(env)
         token = token_string_from_request request
-        env['octanner_token_data'] = packet.unpack token
+        env['oauth2_token_data'] = packet.unpack token
         @app.call(env)
       rescue StandardError => e
-        env['octanner_token_data'] = nil
+        env['oauth2_token_data'] = nil
         @app.call(env)
       end
 
