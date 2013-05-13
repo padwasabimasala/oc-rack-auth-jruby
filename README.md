@@ -50,6 +50,6 @@ https://client_id:client_secret@oc-eve-prod.herokuapp.com/oauth/token?grant_type
 
 or with `curl`:
 ```
-curl -d "grant_type=password" -d "username=some_user" -d "password=some_password" 'https://client_id:client_secret@oc-eve-prod.herokuapp.com/oauth/token'
+curl -d "grant_type=password" -d "username=some_user" -d "password=some_password" 'https://client_id:client_secret@accounts.octanner.com/oauth/token'
 ```
 The return will be JSON with the access token and token type.
