@@ -31,13 +31,28 @@ The `OCT_AUTH_KEY` should be an environment variable set to the shared secret ke
 
 
 
-### Authenticating Requests
+## Authenticating Requests
 
 The `Rack::Auth::OCTanner` middleware will look for an OAuth2 token in the request parameters or headers, and will attempt to validate that token.  If the validation succeeds, the middleware will add the following object to the request environment:
 
 `env['oauth2_token_data']` - A `Hash` of basic information representing the user associated with the token.  This may include the user's ID, their associated company ID, and any associated OAuth2 scopes.  The actual content will depend on the configuration of the OAuth2 provider service.
 
 If the authentication fails, this value will be set to `nil`.
+
+
+
+### Using Rails before_filter
+
+The `Rack::Auth::AuthenticationFilter` can be used for quick authenticaiton in Rails controllers.  Add the following to the controller:
+
+```ruby
+before_filter Rack::Auth::AuthenticationFilter.new(scopes)
+```
+
+`scopes` is an optional array of OAuth2 scopes that are required to pass the filter (i.e. 'registration', 'user_read', etc.).  The token must qualify for all the scopes in the array to pass.
+
+If the token is not present in the request or the require scopes are not met, the filter will return 401.
+
 
 
 ### Obtaining a token through HTTP
