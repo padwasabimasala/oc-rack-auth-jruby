@@ -51,7 +51,7 @@ before_filter Rack::Auth::AuthenticationFilter.new(scopes)
 
 `scopes` is an optional array of OAuth2 scopes that are required to pass the filter (i.e. 'registration', 'user_read', etc.).  The token must qualify for all the scopes in the array to pass.
 
-If the token is not present in the request or the require scopes are not met, the filter will return 401.
+If the token is not present in the request or all of the required scopes are not met, the filter will return 401.
 
 
 
