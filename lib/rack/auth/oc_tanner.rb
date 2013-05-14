@@ -8,18 +8,11 @@ module Rack
       end
 
       def call(env)
+        xbug env: env
         request = Rack::Request.new(env)
-
-        debug_msg = "Rack::Auth::OCTanner env: #{env.inspect}"
-        begin
-          Rails.logger.debug debug_msg
-        rescue StandardError
-          STDERR.puts debug_msg
-        end
-
         token = token_string_from_request request
         utoken = packet.unpack token
-        p [:utoken, utoken]
+        xbug utoken: utoken
         env['oauth2_token_data'] = utoken
         env['octanner_auth_user'] = utoken
         @app.call(env)
@@ -49,8 +42,18 @@ module Rack
       end
 
       def packet
-        p [:key, @options[:key]]
         @packet ||= SimpleSecrets::Packet.new @options[:key]
+      end
+
+      def xbug(msg)
+        if ENV['RACK_AUTH_OCTANNER_DEBUG']
+          debug_msg = "Rack::Auth::OCTanner #{msg.inspect}"
+          begin
+            Rails.logger.debug debug_msg
+          rescue StandardError
+            STDERR.puts debug_msg
+          end
+        end
       end
     end
   end
