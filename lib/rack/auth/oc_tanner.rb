@@ -11,6 +11,7 @@ module Rack
       def call(env)
         request = Rack::Request.new(env)
         token = token_string_from_request request
+        env['oauth2_token_raw'] = token
         env['oauth2_token_data'] = packet.unpack token
         @app.call(env)
       rescue StandardError => e
