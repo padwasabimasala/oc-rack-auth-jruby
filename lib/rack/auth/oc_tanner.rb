@@ -7,7 +7,6 @@ module Rack
         @options = options
       end
 
-
       def call(env)
         request = Rack::Request.new(env)
 
@@ -19,20 +18,21 @@ module Rack
         end
 
         token = token_string_from_request request
-        env['oauth2_token_raw'] = token
-        env['oauth2_token_data'] = packet.unpack token
+        utoken = packet.unpack token
+        p [:utoken, utoken]
+        env['oauth2_token_data'] = utoken
+        env['octanner_auth_user'] = utoken
         @app.call(env)
       rescue StandardError => e
         env['oauth2_token_data'] = nil
+        env['octanner_auth_user'] = nil
         @app.call(env)
       end
-
 
       def token_string_from_request(request)
         return nil unless request
         token_string_from_params(request.params) || token_string_from_headers(request.env)
       end
-
 
       private
 
@@ -42,15 +42,14 @@ module Rack
         (params['oauth_token'] && !params['oauth_signature'] ? params['oauth_token'] : nil )
       end
 
-
       def token_string_from_headers(headers = {})
         headers['HTTP_AUTHORIZATION'] &&
         !headers['HTTP_AUTHORIZATION'][/(oauth_version='1.0')/] &&
         headers['HTTP_AUTHORIZATION'][/^(Bearer|OAuth|Token) (token=)?([^\s]*)$/, 3]
       end
 
-
       def packet
+        p [:key, @options[:key]]
         @packet ||= SimpleSecrets::Packet.new @options[:key]
       end
     end
