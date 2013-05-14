@@ -10,6 +10,14 @@ module Rack
 
       def call(env)
         request = Rack::Request.new(env)
+
+        debug_msg = "Rack::Auth::OCTanner env: #{env.inspect}"
+        begin
+          Rails.logger.debug debug_msg
+        rescue StandardError
+          STDERR.puts debug_msg
+        end
+
         token = token_string_from_request request
         env['oauth2_token_raw'] = token
         env['oauth2_token_data'] = packet.unpack token
