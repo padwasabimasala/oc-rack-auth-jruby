@@ -37,13 +37,13 @@ describe Rack::Auth::OCTanner do
     it 'should set env objects if authentication succeeds' do
       env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
       response = subject.call(env)
-      response[1]['oauth2_token_data'].should eq user_info
+      response[1]['octanner_auth_user'].should eq user_info
     end
 
     it 'should set env objects to nil if authentication fails' do
       env = make_env
       response = subject.call(env)
-      response[1]['oauth2_token_data'].should be_nil
+      response[1]['octanner_auth_user'].should be_nil
     end
   end
 

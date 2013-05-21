@@ -40,13 +40,13 @@ describe Rack::Auth::AuthenticationFilter do
     end
 
     it 'should return true if authentication succeeds' do
-      @request.env['oauth2_token_data'] = user_info
+      @request.env['octanner_auth_user'] = user_info
       subject.authenticate_request(@request).should be true
     end
 
     it 'should return true if authentication succeeds with scopes' do
       filter = Rack::Auth::AuthenticationFilter.new [ :foo ]
-      @request.env['oauth2_token_data'] = user_info
+      @request.env['octanner_auth_user'] = user_info
       filter.authenticate_request(@request).should be true
     end
 
@@ -62,7 +62,7 @@ describe Rack::Auth::AuthenticationFilter do
 
       it 'should return false if user data is missing required scopes' do
         filter = Rack::Auth::AuthenticationFilter.new [ :foo, :bar ]
-        @request.env['oauth2_token_data'] = user_info
+        @request.env['octanner_auth_user'] = user_info
         filter.authenticate_request(@request).should be false
       end
     end
