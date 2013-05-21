@@ -35,7 +35,7 @@ The `OCT_AUTH_KEY` should be an environment variable set to the shared secret ke
 
 The `Rack::Auth::OCTanner` middleware will look for an OAuth2 token in the request parameters or headers, and will attempt to validate that token.  If the validation succeeds, the middleware will add the following object to the request environment:
 
-`env['oauth2_token_data']` - A `Hash` of basic information representing the user associated with the token.  This may include the user's ID, their associated company ID, and any associated OAuth2 scopes.  The actual content will depend on the configuration of the OAuth2 provider service.
+`env['octanner_auth_user']` - A `Hash` of basic information representing the user associated with the token.  This may include the user's ID, their associated company ID, and any associated OAuth2 scopes.  The actual content will depend on the configuration of the OAuth2 provider service.
 
 If the authentication fails, this value will be set to `nil`.
 
