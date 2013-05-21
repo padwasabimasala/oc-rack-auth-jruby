@@ -23,11 +23,11 @@ Add the following to your config/applications.rb file
 
 ```ruby
 class Application < Rails::Application
-  config.middleware.use Rack::Auth::OCTanner, key: ENV['OCT_AUTH_KEY']
+  config.middleware.use Rack::Auth::OCTanner, key: ENV['TOKEN_HEX_KEY']
 end
 ```
 
-The `OCT_AUTH_KEY` should be an environment variable set to the shared secret key used to encrypt and decrypt the authentication tokens.  This parameter is required.
+The `TOKEN_HEX_KEY` should be an environment variable set to the shared secret key used to encrypt and decrypt the authentication tokens.  This parameter is required.
 
 
 
