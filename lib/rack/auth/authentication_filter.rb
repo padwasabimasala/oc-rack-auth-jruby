@@ -17,7 +17,7 @@ class Rack::Auth::AuthenticationFilter
   def authenticate_request(request)
     return false unless request
 
-    user_data = request.env['oauth2_token_data']
+    user_data = request.env['octanner_auth_user']
     return false unless user_data
 
     authenticate_scopes user_data['scopes']
