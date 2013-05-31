@@ -11,7 +11,6 @@ module Rack
         debug env: env
         token = token_from_headers || token_from_params
         user = auth_user(token)
-        @env['oauth2_token_data'] = user
         @env['octanner_auth_user'] = user
         @env['octanner_auth_user']['token'] = token
         @app.call(@env)
