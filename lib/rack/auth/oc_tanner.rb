@@ -9,7 +9,6 @@ module Rack
 
       def call(env)
         @env = env.dup
-        debug env: env
         token = token_from_headers || token_from_params
         user = auth_user(token)
         if user
