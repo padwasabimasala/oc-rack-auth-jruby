@@ -23,7 +23,7 @@ module Rack
       end
 
       def auth_user(token)
-        debug "Decrypting Token: #{token.inspect}"
+        debug "Decrypting Token: #{token.inspect} with #{@options[:key]}"
         data = packet.unpack(token)
         debug "Data: #{data.inspect}"
         data
