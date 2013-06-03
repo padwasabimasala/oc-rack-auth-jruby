@@ -2,6 +2,7 @@ module Rack
   module Auth
     class OCTanner
       def initialize(app, options = {})
+        options[:debug] = true if ENV['RACK_AUTH_OCTANNER_DEBUG']
         @app = app
         @options = options
       end
@@ -50,7 +51,7 @@ module Rack
       end
 
       def debug(msg)
-        STDERR.puts "Rack::Auth::OCTanner #{msg.inspect}" if ENV['RACK_AUTH_OCTANNER_DEBUG']
+        STDERR.puts "Rack::Auth::OCTanner #{msg.inspect}" if @options[:debug]
       end
     end
   end
