@@ -23,6 +23,7 @@ module Rack
       end
 
       def auth_user(token)
+        return nil if token.nil? || token.empty?
         debug "Decrypting Token: #{token.inspect} with #{@options[:key]}"
         data = packet.unpack(token)
         debug "Data: #{data.inspect}"
@@ -32,7 +33,7 @@ module Rack
       private
 
       def request
-        request ||= Rack::Request.new @env
+        request ||= Rack::Request.new @env  # todo is 'request' a local variable here? why?
       end
 
       def token_from_params
