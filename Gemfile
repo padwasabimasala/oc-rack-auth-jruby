@@ -7,6 +7,4 @@ group :test, :development do
   gem 'rspec'
   gem 'simplecov', :require => false
   gem 'debugger', :require => false
-  gem 'rubyzip', :require => false
-  gem 'pony', :require => false
 end
