@@ -13,6 +13,13 @@ module Rack
         @options = options
       end
 
+      def token_overridden?
+        unless instance_variable_defined? :@token_overridden
+          @token_overridden = !!ENV['OCTANNER_AUTH_TOKEN']
+        end
+        @token_overridden
+      end
+
       def call(env)
         @env = env.dup
         begin

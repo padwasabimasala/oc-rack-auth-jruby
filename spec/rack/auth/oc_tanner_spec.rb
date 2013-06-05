@@ -33,25 +33,29 @@ describe Rack::Auth::OCTanner do
     end
   end
 
+  describe "#token_overridden?" do
+    it "always returns true if ENV token set by time of first call" do
+      ENV['OCTANNER_AUTH_TOKEN'] = "any_thing_not_nil"
+      env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
+      subject.token_overridden?.should eq true
+      ENV['OCTANNER_AUTH_TOKEN'] = nil
+      subject.token_overridden?.should eq true
+    end
+    
+    it "always returns false if ENV token unset by time of first call" do
+      ENV['OCTANNER_AUTH_TOKEN'] = nil
+      env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
+      subject.token_overridden?.should eq false
+      ENV['OCTANNER_AUTH_TOKEN'] = "any_thing_not_nil"
+      subject.token_overridden?.should eq false
+    end
+  end
+
   describe '#call' do
     before :each do
       @request = OpenStruct.new
       @request.params = {}
       @request.env = {}
-    end
-
-    it 'should set taken in global env if not already set' do
-      ENV['OCTANNER_AUTH_TOKEN'] = nil
-      env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
-      response = subject.call(env)
-      ENV['OCTANNER_AUTH_TOKEN'].should eq token
-    end
-
-    it 'should not set taken in global env if already set' do
-      ENV['OCTANNER_AUTH_TOKEN'] = "already_set"
-      env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
-      response = subject.call(env)
-      ENV['OCTANNER_AUTH_TOKEN'].should eq "already_set"
     end
 
     it 'should set env objects if authentication succeeds' do
