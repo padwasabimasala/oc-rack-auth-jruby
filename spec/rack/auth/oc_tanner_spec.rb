@@ -53,6 +53,7 @@ describe Rack::Auth::OCTanner do
 
   describe '#call' do
     before :each do
+      ENV['OCTANNER_AUTH_TOKEN'] = nil
       @request = OpenStruct.new
       @request.params = {}
       @request.env = {}
@@ -60,21 +61,33 @@ describe Rack::Auth::OCTanner do
 
     it 'should set env objects if authentication succeeds' do
       env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
-      subject.should_receive(:auth_user).with(token).and_return(user_info)
+      subject.should_receive(:decode_token).with(token).and_return(user_info)
       response = subject.call(env)
       response[1]['octanner_auth_user'].should eq user_info
     end
 
     it 'should set the token in the request env' do
       env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
-      subject.should_receive(:auth_user).with(token).and_return(user_info)
       response = subject.call(env)
       response[1]['octanner_auth_user']['token'].should eq token
     end
 
+    it "should set use the token in the ENV if set" do
+      ENV['OCTANNER_AUTH_TOKEN'] = "the token"
+      env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
+      subject.should_receive(:decode_token).with("the token")
+      response = subject.call(env)
+    end
+
+    it "should set the ENV with token if not initially set" do
+      env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
+      response = subject.call(env)
+      ENV['OCTANNER_AUTH_TOKEN'].should eq token
+    end
+
     it 'should set env objects to nil if authentication fails' do
       env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
-      subject.should_receive(:auth_user).with(token).and_return(nil)
+      subject.should_receive(:decode_token).with(token).and_return(nil)
       response = subject.call(env)
       response[1]['octanner_auth_user'].should be_nil
     end
@@ -82,20 +95,20 @@ describe Rack::Auth::OCTanner do
     it "should use headers over parameters for the auth token" do
       subject.should_receive(:token_from_headers).once.and_return(token)
       subject.should_not_receive(:token_from_params)
-      subject.should_receive(:auth_user).with(token).and_return(nil)      
+      subject.should_receive(:decode_token).with(token).and_return(nil)      
       subject.call(make_env)
     end
 
     it "should use the access_token parameter if no http headers present" do
       subject.should_receive(:token_from_headers).once.and_return(nil)
       subject.should_receive(:token_from_params).once.and_return(token)
-      subject.should_receive(:auth_user).with(token).and_return(nil)
+      subject.should_receive(:decode_token).with(token).and_return(nil)
       subject.call(make_env)
     end
 
     it "should return nil if both token_from_headers and token_from_params are nils" do
       subject.should_receive(:token_from_headers).once.and_return(nil)
-      subject.should_receive(:auth_user).with(nil).and_return(nil)
+      subject.should_receive(:decode_token).with(nil).and_return(nil)
       response = subject.call(make_env)
       response[1]['octanner_auth_user'].should be_nil
     end
@@ -103,21 +116,21 @@ describe Rack::Auth::OCTanner do
     it "should return nil if token_from_headers is empty" do
       env = make_env 'HTTP_AUTHORIZATION' => "Token token="
       subject.should_receive(:token_from_headers).once.and_return('')
-      subject.should_receive(:auth_user).with('').and_return(nil)
+      subject.should_receive(:decode_token).with('').and_return(nil)
       response = subject.call(env)
       response[1]['octanner_auth_user'].should be_nil
     end
 
     it "should return nil if token_from_headers is empty" do
       env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
-      subject.should_receive(:auth_user).with(token).and_raise(StandardError)
+      subject.should_receive(:decode_token).with(token).and_raise(StandardError)
       response = subject.call(env)
       response[1]['octanner_auth_user'].should be_nil
     end
 
   end
 
-  describe '#auth_user' do
+  describe '#decode_token' do
     before :each do
       @request = OpenStruct.new
       @request.params = {}
@@ -125,11 +138,11 @@ describe Rack::Auth::OCTanner do
     end
 
     it 'returns an object if matches access_token' do
-      subject.auth_user(token).should eq user_info
+      subject.decode_token(token).should eq user_info.merge({"token" => token})
     end
 
     it 'returns nil if nothing matches' do
-      subject.auth_user('bad1234').should eq nil
+      subject.decode_token('bad1234').should eq nil
     end
   end
 end

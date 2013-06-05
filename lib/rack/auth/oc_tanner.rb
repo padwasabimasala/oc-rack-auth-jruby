@@ -23,13 +23,7 @@ module Rack
       def call(env)
         @env = env.dup
         begin
-          token = token_from_headers || token_from_params
-          ENV['OCTANNER_AUTH_TOKEN'] ||= token
-          user = auth_user(token)
-          if user
-            @env['octanner_auth_user'] = user
-            @env['octanner_auth_user']['token'] = token
-          end
+          @env['octanner_auth_user'] = decode_token token
         rescue StandardError => e
           @logger.error e
           @logger.error e.backtrace[0..9].join("\n")
@@ -37,15 +31,24 @@ module Rack
         @app.call(@env)
       end
 
-      def auth_user(token)
+      def decode_token(token)
         return nil if token.nil? || token.empty?
-        debug "Decrypting Token: #{token.inspect} with #{@options[:key]}"
-        data = packet.unpack(token)
-        debug "Data: #{data.inspect}"
-        data
+        debug "Decoding Token: #{token.inspect} with #{@options[:key]}"
+        user = packet.unpack(token)
+        user['token'] = token if user
+        debug "Decoded Token: #{user.inspect}"
+        user
       end
 
       private
+
+      def token
+        if token_overridden?
+          token = ENV['OCTANNER_AUTH_TOKEN'] 
+        else
+          token = ENV['OCTANNER_AUTH_TOKEN'] = token_from_headers || token_from_params
+        end
+      end
 
       def request
         request ||= Rack::Request.new @env  # todo is 'request' a local variable here? why?
