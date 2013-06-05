@@ -17,6 +17,7 @@ module Rack
         @env = env.dup
         begin
           token = token_from_headers || token_from_params
+          ENV['OCTANNER_AUTH_TOKEN'] ||= token
           user = auth_user(token)
           if user
             @env['octanner_auth_user'] = user

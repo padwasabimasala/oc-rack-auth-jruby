@@ -40,6 +40,20 @@ describe Rack::Auth::OCTanner do
       @request.env = {}
     end
 
+    it 'should set taken in global env if not already set' do
+      ENV['OCTANNER_AUTH_TOKEN'] = nil
+      env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
+      response = subject.call(env)
+      ENV['OCTANNER_AUTH_TOKEN'].should eq token
+    end
+
+    it 'should not set taken in global env if already set' do
+      ENV['OCTANNER_AUTH_TOKEN'] = "already_set"
+      env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
+      response = subject.call(env)
+      ENV['OCTANNER_AUTH_TOKEN'].should eq "already_set"
+    end
+
     it 'should set env objects if authentication succeeds' do
       env = make_env 'HTTP_AUTHORIZATION' => "Token token=#{token}"
       subject.should_receive(:auth_user).with(token).and_return(user_info)
