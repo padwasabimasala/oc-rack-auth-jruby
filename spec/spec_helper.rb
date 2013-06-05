@@ -27,7 +27,12 @@ SimpleCov.at_exit do
       :from => "admin@octanner.com",
       :subject => "Coverage for latest CircleCI build",
       :body => "Unzip the attachment and load test-coverage/index.html to read.",
-      :attachments => {"test-coverage.zip" => File.read(archive)}
+      :attachments => {"test-coverage.zip" => File.read(archive)},
+      :via_options => {
+          :address        => 'mailgateway.octanner.com',
+          :port           => '25',
+          :domain         => "localhost.localdomain"
+        }
     })
 
     exit 1
