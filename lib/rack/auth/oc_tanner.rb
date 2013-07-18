@@ -44,7 +44,7 @@ module Rack
 
       def token
         if token_overridden?
-          token = ENV['OCTANNER_AUTH_TOKEN'] 
+          token = ENV['OCTANNER_AUTH_TOKEN']
         else
           token = ENV['OCTANNER_AUTH_TOKEN'] = token_from_headers || token_from_params
         end
@@ -55,13 +55,16 @@ module Rack
       end
 
       def token_from_params
-        request.params['access_token']
+        return request.params['bearer_token'] if request.params['bearer_token']
+
+        # 'access_token' deprecated; we're moving to just Bearer tokens
+        return request.params['access_token'] if request.params['access_token']
       end
 
       def token_from_headers
         request.env['HTTP_AUTHORIZATION'] &&
         !request.env['HTTP_AUTHORIZATION'][/(oauth_version='1.0')/] &&
-        request.env['HTTP_AUTHORIZATION'][/^Token token=?([^\s]*)$/, 1]
+        request.env['HTTP_AUTHORIZATION'][/^(Bearer|Token) token=?([^\s]*)$/, 2] # 'Token' deprecated; we're moving to just Bearer tokens
       end
 
       def packet
