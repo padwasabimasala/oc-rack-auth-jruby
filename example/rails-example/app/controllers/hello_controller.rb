@@ -1,6 +1,10 @@
 class HelloController < ApplicationController
 
-  before_filter Rack::Auth::AuthenticationFilter.new
+  before_filter Rack::Auth::AuthenticationFilter.new(), only: :hello
+
+  def hi
+    render json: { message: "Hi!" }
+  end
 
   def hello
     user = env['octanner_auth_user']['name']
