@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/octanner/rack-auth-oc_tanner.git
-  revision: 09a979e14aad467e277e8a5896867e3337f07178
+  revision: a2a24dbb5d5932f51c03640d719e15149a6f0116
   specs:
-    rack-auth-oc_tanner (0.9.5)
+    rack-auth-oc_tanner (0.9.6)
       rack
       simple-secrets (~> 1.0.0)
 
