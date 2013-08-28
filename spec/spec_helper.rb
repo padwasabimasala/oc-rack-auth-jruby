@@ -1,7 +1,7 @@
 require 'simplecov'
 SimpleCov.start
 
-SimpleCov.minimum_coverage 0
+SimpleCov.minimum_coverage 100
 
 SimpleCov.at_exit do
   SimpleCov.result.format!
