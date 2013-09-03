@@ -69,12 +69,6 @@ module Rack
       def packet
         @packet ||= SimpleSecrets::Packet.new @options[:key]
       end
-
-      private
-
-      def debug(msg)
-        @logger.debug "Rack::Auth::OCTanner #{msg.inspect}"
-      end
     end
   end
 end
