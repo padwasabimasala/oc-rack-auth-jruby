@@ -25,6 +25,22 @@ module Rack
       def ms_per_unit
         @ms_per_unit
       end
+
+      def at units
+        (units * ms_per_unit) + ((Time.now.to_i / range_in_ms).floor * range_in_ms)
+      end
+
+      def min
+        date (-1 * (range / 2))
+      end
+
+      def max
+        date (range - 1)
+      end
+
+      def date from
+        Time.at(at from)
+      end
     end
   end
 end
