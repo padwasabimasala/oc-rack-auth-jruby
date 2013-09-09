@@ -1,3 +1,5 @@
+# A Ruby implementation of timshadel/smd:
+#   https://github.com/timshadel/smd
 module Rack
   module Auth
     class SmD
@@ -5,14 +7,19 @@ module Rack
       MS_PER_SECOND = 1000
       MS_PER_MINUTE = 60 * MS_PER_SECOND
       MS_PER_HOUR = 60 * MS_PER_MINUTE
+      DEFAULT_RANGE = (2 ** 16)
 
       def initialize params = {}
-        @int_range = params[:int_range] || (2 ** 16)
+        @range = params[:range] || DEFAULT_RANGE
         @ms_per_unit = params[:ms_per_unit] || MS_PER_HOUR
       end
 
-      def int_range
-        @int_range
+      def range
+        @range
+      end
+
+      def range_in_ms
+        range * ms_per_unit
       end
 
       def ms_per_unit
