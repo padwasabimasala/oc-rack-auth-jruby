@@ -1,4 +1,4 @@
-# A Ruby implementation of timshadel/smd:
+# A Ruby implementation of Small Dates:
 #   https://github.com/timshadel/smd
 module Rack
   module Auth

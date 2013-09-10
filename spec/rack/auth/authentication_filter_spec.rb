@@ -11,7 +11,7 @@ describe Rack::Auth::AuthenticationFilter do
       'u' => 'user-id',
       's' => (scope_1 + scope_2),
       'c' => 'client-id',
-      'e' => 1234
+      'e' => 383
     }
   }
 
@@ -65,14 +65,27 @@ describe Rack::Auth::AuthenticationFilter do
     end
 
     it 'should return true if authentication succeeds' do
+      filter = Rack::Auth::AuthenticationFilter.new
+      Rack::Auth::AuthenticationFilter.any_instance.stub(:authenticate_scopes).and_return(true)
+      Rack::Auth::AuthenticationFilter.any_instance.stub(:authenticate_expires).and_return(true)
       @request.env['octanner_auth_user'] = token_info
       subject.authenticate_request(@request).should be true
     end
 
-    it 'should return true if authentication succeeds with scopes' do
-      filter = Rack::Auth::AuthenticationFilter.new [ scope_1 ]
+    it 'tries to authenticate scopes' do
+      filter = Rack::Auth::AuthenticationFilter.new
+      filter.should_receive(:authenticate_scopes).once
+      Rack::Auth::AuthenticationFilter.any_instance.stub(:authenticate_expires).and_return(true)
       @request.env['octanner_auth_user'] = token_info
-      filter.authenticate_request(@request).should be true
+      filter.authenticate_request(@request)
+    end
+
+    it 'tries to authenticate expiration' do
+      filter = Rack::Auth::AuthenticationFilter.new
+      Rack::Auth::AuthenticationFilter.any_instance.stub(:authenticate_scopes).and_return(true)
+      filter.should_receive(:authenticate_expires).once
+      @request.env['octanner_auth_user'] = token_info
+      filter.authenticate_request(@request)
     end
 
     context 'authentication failures' do
@@ -80,14 +93,8 @@ describe Rack::Auth::AuthenticationFilter do
         subject.authenticate_request(nil).should be false
       end
 
-      it 'should return false if no user data' do
+      it 'should return false if no token data' do
         subject.authenticate_request(@request).should be false
-      end
-
-      it 'should return false if user data is missing required scopes' do
-        filter = Rack::Auth::AuthenticationFilter.new [ scope_1, scope_2, scope_3 ]
-        @request.env['octanner_auth_user'] = token_info
-        filter.authenticate_request(@request).should be false
       end
     end
   end
@@ -106,6 +113,22 @@ describe Rack::Auth::AuthenticationFilter do
     it 'returns false if only some required scopes are included' do
       filter = Rack::Auth::AuthenticationFilter.new [ scope_1, scope_2 ]
       filter.authenticate_scopes(scope_1).should eq false
+    end
+  end
+
+
+  describe "#authenticate_expires" do
+    let(:token_smd){ 383 }
+    let(:token_time){ Rack::Auth::SmD.new.date token_smd}
+
+    it "returns true if token has not expired" do
+      Time.stub(:now).and_return(token_time - 1)
+      subject.authenticate_expires(token_smd).should eq true
+    end
+
+    it "returns false if token has expired" do
+      Time.stub(:now).and_return(token_time + 1)
+      subject.authenticate_expires(token_smd).should eq false
     end
   end
 end
