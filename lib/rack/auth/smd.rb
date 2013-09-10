@@ -41,6 +41,14 @@ module Rack
       def date from
         Time.at(at from)
       end
+
+      def from milliseconds
+        ((milliseconds % range_in_ms) / ms_per_unit).floor
+      end
+
+      def now
+        from Time.now.to_i
+      end
     end
   end
 end

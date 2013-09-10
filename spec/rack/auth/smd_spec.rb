@@ -56,4 +56,18 @@ describe Rack::Auth::SmD do
     end
   end
 
+  describe "#from" do
+    it "should be less than the range" do
+      subject.from(Time.now.to_i).should be < subject.range
+    end
+  end
+
+  describe "#now" do
+    it "should be within one unit to Time.now" do
+      at = subject.at subject.now
+      time = Time.now.to_i
+      (time - at).should be < subject.ms_per_unit
+    end
+  end
+
 end
