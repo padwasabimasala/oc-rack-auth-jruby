@@ -94,42 +94,18 @@ describe Rack::Auth::AuthenticationFilter do
 
 
   describe '#authenticate_scopes' do
-    context "accepts" do
-      it 'accepts nil scopes' do
-        filter = Rack::Auth::AuthenticationFilter.new
-        filter.authenticate_scopes(nil).should_not raise_error
-      end
-
-      it 'accepts an empty array of scopes' do
-        filter = Rack::Auth::AuthenticationFilter.new
-        filter.authenticate_scopes([]).should_not raise_error
-      end
-
-      it 'accepts a single scope' do
-        filter = Rack::Auth::AuthenticationFilter.new
-        filter.authenticate_scopes(scope_1).should_not raise_error
-      end
-
-      it 'accepts an array scope' do
-        filter = Rack::Auth::AuthenticationFilter.new
-        filter.authenticate_scopes([ scope_1, scope_2 ]).should_not raise_error
-      end
+    it 'returns true if no scopes are required' do
+      subject.authenticate_scopes([ scope_1, scope_2 ]).should eq true
     end
 
-    context "returns" do
-      it 'true if no scopes are required' do
-        subject.authenticate_scopes([ scope_1, scope_2 ]).should eq true
-      end
+    it 'returns true if all required scopes are included' do
+      filter = Rack::Auth::AuthenticationFilter.new [ scope_1, scope_2 ]
+      filter.authenticate_scopes([ scope_1, scope_2 ]).should eq true
+    end
 
-      it 'true if all required scopes are included' do
-        filter = Rack::Auth::AuthenticationFilter.new [ scope_1, scope_2 ]
-        filter.authenticate_scopes([ scope_1, scope_2 ]).should eq true
-      end
-
-      it 'false if only some required scopes are included' do
-        filter = Rack::Auth::AuthenticationFilter.new [ scope_1, scope_2 ]
-        filter.authenticate_scopes(scope_1).should eq false
-      end
+    it 'returns false if only some required scopes are included' do
+      filter = Rack::Auth::AuthenticationFilter.new [ scope_1, scope_2 ]
+      filter.authenticate_scopes(scope_1).should eq false
     end
   end
 end
