@@ -1,7 +1,7 @@
 class Rack::Auth::AuthenticationFilter
 
-  def initialize(scopes = [])
-    @required_scopes = Set.new scopes.to_a
+  def initialize(scopes = 0)
+    @required_scopes = get_scopes(scopes)
   end
 
 
@@ -20,19 +20,21 @@ class Rack::Auth::AuthenticationFilter
     user_data = request.env['octanner_auth_user']
     return false unless user_data
 
-    authenticate_scopes user_data['scopes']
+    authenticate_scopes user_data['s']
   end
 
 
-  def authenticate_scopes(scopes = [])
-    @required_scopes.subset? array_to_symbolized_set(scopes.to_a)
+  def authenticate_scopes(scopes = 0)
+    @required_scopes & get_scopes(scopes) == @required_scopes
   end
-
 
   private
 
-
-  def array_to_symbolized_set(array = [])
-    set = Set.new array.map{ |a| a.intern }
+  def get_scopes(scopes)
+    if scopes.kind_of? Array
+      scopes.reduce( 0, :+ )
+    else
+      scopes.nil? ? 0 : scopes
+    end
   end
 end
