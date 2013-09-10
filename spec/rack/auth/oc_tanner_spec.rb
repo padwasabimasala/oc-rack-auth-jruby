@@ -12,8 +12,8 @@ describe Rack::Auth::OCTanner do
   let(:app) { lambda { |env| [200, env, []] }}
   let(:logger) { l = ::Logger.new(STDERR); l.level = Logger::FATAL; l } # silence output
   let(:options) {{ key: "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd", log: logger }}
-  let(:user_info) {{ 'person_id' => '1', 'company_id' => '2', 'application_id' => '3', 'scopes' => [ 'foo' ] }}
-  let(:token) { SimpleSecrets::Packet.new(options[:key]).pack user_info }
+  let(:token_info) { { 'u' => 'user-id', 's' => 42, 'c' => 'client-id', 'e' => 1234 } }
+  let(:token) { SimpleSecrets::Packet.new(options[:key]).pack token_info }
   let(:middleware) { Rack::Auth::OCTanner.new app, options }
 
   subject{ middleware }
@@ -61,9 +61,9 @@ describe Rack::Auth::OCTanner do
 
     it 'should set env objects if authentication succeeds' do
       env = make_env 'HTTP_AUTHORIZATION' => "Bearer #{token}"
-      subject.should_receive(:decode_token).with(token).and_return(user_info)
+      subject.should_receive(:decode_token).with(token).and_return(token_info)
       response = subject.call(env)
-      response[1]['octanner_auth_user'].should eq user_info
+      response[1]['octanner_auth_user'].should eq token_info
     end
 
     it 'should set the token in the request env' do
@@ -160,7 +160,7 @@ describe Rack::Auth::OCTanner do
     end
 
     it 'returns an object if matches access_token' do
-      subject.decode_token(token).should eq user_info.merge({"token" => token})
+      subject.decode_token(token).should eq token_info.merge({"token" => token})
     end
 
     it 'returns nil if nothing matches' do
