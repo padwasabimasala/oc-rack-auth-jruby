@@ -7,7 +7,7 @@ class HelloController < ApplicationController
   end
 
   def hello
-    user = env['octanner_auth_user']['name']
+    user = env['octanner_auth_user']['u']
     render json: { message: "Hello there, #{user}!" }
   end
 end
