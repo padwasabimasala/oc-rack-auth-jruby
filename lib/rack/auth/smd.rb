@@ -27,7 +27,7 @@ module Rack
       end
 
       def at units
-        (units * ms_per_unit) + ((Time.now.to_i / range_in_ms).floor * range_in_ms)
+        (units * ms_per_unit) + ((current_ms / range_in_ms).floor * range_in_ms)
       end
 
       def min
@@ -47,7 +47,13 @@ module Rack
       end
 
       def now
-        from Time.now.to_i
+        from current_ms
+      end
+
+      private
+
+      def current_ms
+        Time.now.gmtime.to_i
       end
     end
   end

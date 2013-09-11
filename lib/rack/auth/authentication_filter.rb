@@ -32,8 +32,8 @@ class Rack::Auth::AuthenticationFilter
   # NOTE: There are some issues when a token date is on the
   # SmD range "boundary"; Tim will resolve those and we'll
   # implement here.
-  def authenticate_expires(smd)
-    return true if @smd.date(smd) > Time.now
+  def authenticate_expires(smd, current_time = Time.now.gmtime)
+    return true if @smd.date(smd) > current_time
     false
   end
 

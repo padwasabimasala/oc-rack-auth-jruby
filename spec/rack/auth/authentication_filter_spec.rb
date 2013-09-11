@@ -122,13 +122,11 @@ describe Rack::Auth::AuthenticationFilter do
     let(:token_time){ Rack::Auth::SmD.new.date token_smd}
 
     it "returns true if token has not expired" do
-      Time.stub(:now).and_return(token_time - 1)
-      subject.authenticate_expires(token_smd).should eq true
+      subject.authenticate_expires(token_smd, token_time - 1).should eq true
     end
 
     it "returns false if token has expired" do
-      Time.stub(:now).and_return(token_time + 1)
-      subject.authenticate_expires(token_smd).should eq false
+      subject.authenticate_expires(token_smd, token_time + 1).should eq false
     end
   end
 end
