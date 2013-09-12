@@ -33,9 +33,13 @@ module Rack
 
       def decode_token(token)
         return nil if token.nil? || token.empty?
-        user = packet.unpack(token)
-        user['token'] = token if user
-        user
+        data = packet.unpack(token)
+        data['token'] = token if data
+
+        # Kind of hacky, due to MsgPack coercing bytes into strings
+        fix_value_types data
+
+        data
       end
 
       private
@@ -68,6 +72,13 @@ module Rack
 
       def packet
         @packet ||= SimpleSecrets::Packet.new @options[:key]
+      end
+
+      # MsgPack will unpack a byte array into a string.
+      # The "s" and "e" fields should always be numeric.
+      def fix_value_types data
+        data['s'] = data['s'].to_i if data['s']
+        data['e'] = data['e'].to_i if data['e']
       end
     end
   end
