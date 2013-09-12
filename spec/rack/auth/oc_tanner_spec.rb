@@ -169,9 +169,9 @@ describe Rack::Auth::OCTanner do
 
     # Real-world example as an integration test
     context 'real-world integration example' do
-      let(:options) {{ key: "050041854e8286d1ca4a57285d797bb9d78d5e330e6fb5b42e93f42b802ee9ac", log: logger }}
-      let(:token){ 'iIbrvgcNoSDm9aO497SCtfBzWpqAPx8vP5QolxyY4OFTJJnCjgK2WmIxmSBxnWIxOHa3F4YQ24vNzGS0vez393aOtU1C7uZ3Y6MNRkhfrhoOVf1ajtb_F-e2mbX8zvN2prumAi06' }
-      let(:data){ { 'u' => '1234', 's' => 4, 'c' => 'ntp', 'e' => 65535 } }
+      let(:options) {{ key: "81ca9f21318178682b924246f3812b99c61cb0a7989efabdd4254589b112ea9a", log: logger }}
+      let(:token){ "qPKv_qK1T8i3Z9fLFv0QRQlTmG9Gqs427Ai6oNHvsbJHk8zqI9t8tQRsX5Ke1cIZIWJLXMh0z3eCJeXRhGZb8PRrPSE9KreYzUlVjZwAv1w9-TIQZSOVWm-R5WDpAK6iI9BkGLdi" }
+      let(:data){ {"s"=>"\u0010", "c"=>"eve", "e"=>55382, "u"=>"user1234"} }
 
       subject { Rack::Auth::OCTanner.new app, options }
 
