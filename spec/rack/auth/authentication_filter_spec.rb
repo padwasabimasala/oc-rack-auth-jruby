@@ -8,10 +8,10 @@ describe Rack::Auth::AuthenticationFilter do
 
   let(:token_info) {
     {
-      'u' => 'user-id',
-      's' => (scope_1 + scope_2),
-      'c' => 'client-id',
-      'e' => 383
+      "s" => (scope_1 + scope_2),
+      "c" => "eve",
+      "e" => 383,
+      "u" => "user1234"
     }
   }
 
@@ -106,6 +106,11 @@ describe Rack::Auth::AuthenticationFilter do
     end
 
     it 'returns true if all required scopes are included' do
+      filter = Rack::Auth::AuthenticationFilter.new [ scope_1, scope_2 ]
+      filter.authenticate_scopes(scope_1 + scope_2).should eq true
+    end
+
+    it 'returns true if all required scopes are included using an array' do
       filter = Rack::Auth::AuthenticationFilter.new [ scope_1, scope_2 ]
       filter.authenticate_scopes([ scope_1, scope_2 ]).should eq true
     end
