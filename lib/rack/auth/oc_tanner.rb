@@ -34,11 +34,11 @@ module Rack
       def decode_token(token)
         return nil if token.nil? || token.empty?
         data = packet.unpack(token)
-        data['token'] = token if data
-
-        # Kind of hacky, due to MsgPack coercing bytes into strings
-        fix_value_types data
-
+        if data
+          # Kind of hacky, due to MsgPack coercing raw binary into strings
+          fix_value_types data
+          data['token'] = token
+        end
         data
       end
 

@@ -166,5 +166,18 @@ describe Rack::Auth::OCTanner do
     it 'returns nil if nothing matches' do
       subject.decode_token('bad1234').should eq nil
     end
+
+    # Real-world example as an integration test
+    context 'real-world integration example' do
+      let(:options) {{ key: "050041854e8286d1ca4a57285d797bb9d78d5e330e6fb5b42e93f42b802ee9ac", log: logger }}
+      let(:token){ 'iIbrvgcNoSDm9aO497SCtfBzWpqAPx8vP5QolxyY4OFTJJnCjgK2WmIxmSBxnWIxOHa3F4YQ24vNzGS0vez393aOtU1C7uZ3Y6MNRkhfrhoOVf1ajtb_F-e2mbX8zvN2prumAi06' }
+      let(:data){ { 'u' => '1234', 's' => 4, 'c' => 'ntp', 'e' => 65535 } }
+
+      subject { Rack::Auth::OCTanner.new app, options }
+
+      it 'returns the expected hash data' do
+        subject.decode_token(token).should eq data.merge({"token" => token})
+      end
+    end
   end
 end
