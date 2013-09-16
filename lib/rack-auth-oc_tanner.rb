@@ -5,6 +5,7 @@ module Rack
     autoload :OCTanner, 'rack/auth/oc_tanner'
     autoload :AuthenticationFilter, 'rack/auth/authentication_filter'
     autoload :SmD, 'rack/auth/smd'
+    autoload :Scopes, 'rack/auth/scopes'
   end
 end
 
