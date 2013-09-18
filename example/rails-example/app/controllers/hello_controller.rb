@@ -1,6 +1,6 @@
 class HelloController < ApplicationController
 
-  before_filter Rack::Auth::AuthenticationFilter.new(), only: :hello
+  before_filter Rack::Auth::OCTanner::AuthenticationFilter.new(), only: :hello
 
   def hi
     render json: { message: "Hi!" }

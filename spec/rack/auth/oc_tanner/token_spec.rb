@@ -8,13 +8,13 @@ def make_env(params = {})
   }.merge params
 end
 
-describe Rack::Auth::OCTanner do
+describe Rack::Auth::OCTanner::Token do
   let(:app) { lambda { |env| [200, env, []] }}
   let(:logger) { l = ::Logger.new(STDERR); l.level = Logger::FATAL; l } # silence output
   let(:options) {{ key: "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd", log: logger }}
   let(:token_info) { { 'u' => 'user-id', 's' => 42, 'c' => 'client-id', 'e' => 1234 } }
   let(:token) { SimpleSecrets::Packet.new(options[:key]).pack token_info }
-  let(:middleware) { Rack::Auth::OCTanner.new app, options }
+  let(:middleware) { Rack::Auth::OCTanner::Token.new app, options }
 
   subject{ middleware }
 
@@ -24,7 +24,7 @@ describe Rack::Auth::OCTanner do
     end
 
     it 'creates a new logger by default' do
-      middleware = Rack::Auth::OCTanner.new app, key: "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+      middleware = Rack::Auth::OCTanner::Token.new app, key: "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
       middleware.instance_variable_get(:@logger).should be_a(::Logger)
     end
 
@@ -173,7 +173,7 @@ describe Rack::Auth::OCTanner do
       let(:token){ "qPKv_qK1HoHALj4PXdD_jXQSJrzoM1rAJHdU7n1gBDYEBgFUVuExuIgXVbmejwH92mUQtx6VdITISAC_iJnRRo9v0XMDHT9874TrcYbqCVMxgBsAvWfzXwV__dNSb-PDQhc_WEno" }
       let(:data){ {"s"=>42, "c"=>"eve", "e"=>55382, "u"=>"user1234"} }
 
-      subject { Rack::Auth::OCTanner.new app, options }
+      subject { Rack::Auth::OCTanner::Token.new app, options }
 
       it 'returns the expected hash data' do
         subject.decode_token(token).should eq data.merge({"token" => token})

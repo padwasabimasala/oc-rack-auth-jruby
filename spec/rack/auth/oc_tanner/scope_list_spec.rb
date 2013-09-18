@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-describe Rack::Auth::ScopeList do
+describe Rack::Auth::OCTanner::ScopeList do
 
   let(:scope_string){ "public user.read, user.write; user.delete: admin.read, admin.write, admin.delete" }
 
-  subject(:scope_list){ Rack::Auth::ScopeList.new scope_string }
+  subject(:scope_list){ Rack::Auth::OCTanner::ScopeList.new scope_string }
 
   describe '.bytes_to_int' do
     it 'converts the scope bytes to an integer' do
       bytes = "\xA0\x88"
-      i = Rack::Auth::ScopeList.bytes_to_int bytes
+      i = Rack::Auth::OCTanner::ScopeList.bytes_to_int bytes
       i.should eq 0b1010000010001000
       i.to_s(2).should eq bytes.unpack('B*').first
     end
@@ -65,7 +65,7 @@ describe Rack::Auth::ScopeList do
     end
 
     it 'raises error if a given scope does not exist' do
-      expect{ scope_list.scopes_to_int(['foobar']) }.to raise_error(Rack::Auth::ScopeList::UndefinedScopeError)
+      expect{ scope_list.scopes_to_int(['foobar']) }.to raise_error(Rack::Auth::OCTanner::ScopeList::UndefinedScopeError)
     end
   end
 end

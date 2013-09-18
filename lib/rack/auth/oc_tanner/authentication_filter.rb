@@ -1,10 +1,10 @@
-class Rack::Auth::AuthenticationFilter
+class Rack::Auth::OCTanner::AuthenticationFilter
 
   def initialize(scopes = 0)
     @required_scopes = get_scopes(scopes)
 
     # SmD instance used to for expiration checks
-    @smd = Rack::Auth::SmD.new
+    @smd = Rack::Auth::OCTanner::SmD.new
   end
 
   def before(controller)
