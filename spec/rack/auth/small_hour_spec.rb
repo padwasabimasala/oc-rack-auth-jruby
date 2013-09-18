@@ -15,7 +15,7 @@ describe Rack::Auth::SmallHour do
     end
 
     it "should have YEAR_MASK defined" do
-      Rack::Auth::SmallHour::YEAR_MASK.should eq 0b111111111100000000000000
+      Rack::Auth::SmallHour::YEAR_MASK.should eq 0b11111100000000000000
     end
 
     it "should have YEAR_SHIFT defined" do

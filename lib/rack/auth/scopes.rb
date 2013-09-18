@@ -26,7 +26,7 @@ module Rack
       end
 
       def scope_string_to_array scope_string
-        clean_scope_array scope_string.split(',')
+        clean_scope_array scope_string.split(/[ ,;:]/)
       end
 
       def scope_array_to_hash array
