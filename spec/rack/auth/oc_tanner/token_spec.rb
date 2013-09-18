@@ -12,7 +12,7 @@ describe Rack::Auth::OCTanner::Token do
   let(:app) { lambda { |env| [200, env, []] }}
   let(:logger) { l = ::Logger.new(STDERR); l.level = Logger::FATAL; l } # silence output
   let(:options) {{ key: "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd", log: logger }}
-  let(:token_info) { { 'u' => 'user-id', 's' => 42, 'c' => 'client-id', 'e' => 1234 } }
+  let(:token_info) { { 'u' => 'user-id', 's' => "*", 'c' => 'client-id', 'e' => 1234 } }
   let(:token) { SimpleSecrets::Packet.new(options[:key]).pack token_info }
   let(:middleware) { Rack::Auth::OCTanner::Token.new app, options }
 
@@ -160,7 +160,8 @@ describe Rack::Auth::OCTanner::Token do
     end
 
     it 'returns an object if matches access_token' do
-      subject.decode_token(token).should eq token_info.merge({"token" => token})
+      decoded_token = token_info.merge({"token" => token, "s" => Rack::Auth::OCTanner::ScopeList.bytes_to_int(token_info['s'])})
+      subject.decode_token(token).should eq decoded_token
     end
 
     it 'returns nil if nothing matches' do
@@ -170,8 +171,8 @@ describe Rack::Auth::OCTanner::Token do
     # Real-world example as an integration test
     context 'real-world integration example' do
       let(:options) {{ key: "81ca9f21318178682b924246f3812b99c61cb0a7989efabdd4254589b112ea9a", log: logger }}
-      let(:token){ "qPKv_qK1HoHALj4PXdD_jXQSJrzoM1rAJHdU7n1gBDYEBgFUVuExuIgXVbmejwH92mUQtx6VdITISAC_iJnRRo9v0XMDHT9874TrcYbqCVMxgBsAvWfzXwV__dNSb-PDQhc_WEno" }
-      let(:data){ {"s"=>42, "c"=>"eve", "e"=>55382, "u"=>"user1234"} }
+      let(:token){ "qPKv_qK10eKNyn-j6AP9B_RAiRW__OzdUlRORlHClLmmPj4Ys74NOpd4RhiGyb_ogFf07gaqryOYPYdAmsncz-IbGhfjqsLtL5S5l7U0vQfl5_aHXwq3AwaPQuSUzfGhabYkvDNl" }
+      let(:data){ {"c"=>"eve", "u"=>"my-user", "e"=>55382, "s"=>0b1010000010001000} }
 
       subject { Rack::Auth::OCTanner::Token.new app, options }
 

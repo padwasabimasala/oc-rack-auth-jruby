@@ -32,6 +32,7 @@ class Rack::Auth::OCTanner::Token
   def decode_token(token)
     return nil if token.nil? || token.empty?
     data = packet.unpack(token)
+    data['s'] = Rack::Auth::OCTanner::ScopeList.bytes_to_int data['s'] if data
     data['token'] = token if data
     data
   end
