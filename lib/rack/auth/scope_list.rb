@@ -55,7 +55,6 @@ module Rack
 
       def scopes_to_int scopes = []
         sum = 0
-        debugger
         scopes.to_a.each do |scope|
           raise UndefinedScopeError.new("Undefined scope:  #{scope}") if !has_scope?(scope)
           sum = sum + (1 << index_of(scope))
