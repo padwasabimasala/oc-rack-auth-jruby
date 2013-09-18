@@ -1,7 +1,5 @@
 class Rack::Auth::OCTanner::ScopeList
 
-  class UndefinedScopeError < StandardError; end
-
   # Scopes are defined in the Eve application.  Scopes will
   # typically be compared bit-wise, so it is vital that the
   # list of scopes and the ordinal indexes they are assigned
@@ -54,7 +52,7 @@ class Rack::Auth::OCTanner::ScopeList
   def scopes_to_int scopes = []
     sum = 0
     scopes.to_a.each do |scope|
-      raise UndefinedScopeError.new("Undefined scope:  #{scope}") if !has_scope?(scope)
+      raise Rack::Auth::OCTanner::UndefinedScopeError.new("Undefined scope:  #{scope}") if !has_scope?(scope)
       sum = sum + (1 << index_of(scope))
     end
     sum

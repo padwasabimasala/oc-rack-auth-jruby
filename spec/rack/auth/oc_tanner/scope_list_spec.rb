@@ -65,7 +65,7 @@ describe Rack::Auth::OCTanner::ScopeList do
     end
 
     it 'raises error if a given scope does not exist' do
-      expect{ scope_list.scopes_to_int(['foobar']) }.to raise_error(Rack::Auth::OCTanner::ScopeList::UndefinedScopeError)
+      expect{ scope_list.scopes_to_int(['foobar']) }.to raise_error(Rack::Auth::OCTanner::UndefinedScopeError)
     end
   end
 end

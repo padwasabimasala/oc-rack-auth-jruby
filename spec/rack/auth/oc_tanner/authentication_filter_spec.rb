@@ -2,19 +2,14 @@ require 'spec_helper'
 
 describe Rack::Auth::OCTanner::AuthenticationFilter do
 
-  let(:scope_1){ 1 }
-  let(:scope_2){ 2 }
-  let(:scope_3){ 4 }
+  let(:scope_string){ "public, user.read, user.write, user.delete, admin.read, admin.write, admin.delete" }
+  let(:scope_list){ Rack::Auth::OCTanner::ScopeList.new scope_string }
 
-  let(:token_info) {
-    {
-      "s" => (scope_1 + scope_2),
-      "c" => "eve",
-      "e" => 383,
-      "u" => "user1234"
-    }
-  }
+  before :each do
+    Rack::Auth::OCTanner.stub(:scopes).and_return{ scope_list }
+  end
 
+  let(:token_info) { { "c" => "eve", "u" => "my-user", "e" => 383, "s" => "\xA0\x88" } }
 
   let(:response_ok){ { status: 200, body: token_info.to_json } }
   let(:response_unauthorized){ { status: 401 } }
@@ -29,20 +24,18 @@ describe Rack::Auth::OCTanner::AuthenticationFilter do
       filter.instance_variable_get(:@required_scopes).should eq 0
     end
 
-    it 'accepts a single scope value' do
-      filter = Rack::Auth::OCTanner::AuthenticationFilter.new scope_1
-      filter.instance_variable_get(:@required_scopes).should eq scope_1
-    end
-
     it 'accepts an array of scope values' do
-      scopes = [ scope_1, scope_2, scope_3 ]
-      filter = Rack::Auth::OCTanner::AuthenticationFilter.new scopes
-      filter.instance_variable_get(:@required_scopes).should eq (scope_1 + scope_2 + scope_3)
+      filter = Rack::Auth::OCTanner::AuthenticationFilter.new [ "public", "user.write", "admin.read" ]
+      filter.instance_variable_get(:@required_scopes).should eq 0b1010100
     end
 
     it 'accepts an empty array' do
       filter = Rack::Auth::OCTanner::AuthenticationFilter.new []
       filter.instance_variable_get(:@required_scopes).should eq 0
+    end
+
+    it 'raises an error if a required scope is not defined in the global list' do
+      expect{ Rack::Auth::OCTanner::AuthenticationFilter.new(['foobar']) }.to raise_error(Rack::Auth::OCTanner::UndefinedScopeError)
     end
   end
 
@@ -102,22 +95,17 @@ describe Rack::Auth::OCTanner::AuthenticationFilter do
 
   describe '#authenticate_scopes' do
     it 'returns true if no scopes are required' do
-      subject.authenticate_scopes([ scope_1, scope_2 ]).should eq true
+      subject.authenticate_scopes(0b1010100).should eq true
     end
 
     it 'returns true if all required scopes are included' do
-      filter = Rack::Auth::OCTanner::AuthenticationFilter.new [ scope_1, scope_2 ]
-      filter.authenticate_scopes(scope_1 + scope_2).should eq true
-    end
-
-    it 'returns true if all required scopes are included using an array' do
-      filter = Rack::Auth::OCTanner::AuthenticationFilter.new [ scope_1, scope_2 ]
-      filter.authenticate_scopes([ scope_1, scope_2 ]).should eq true
+      filter = Rack::Auth::OCTanner::AuthenticationFilter.new [ "public", "user.write", "admin.read" ]
+      filter.authenticate_scopes(0b1010100).should eq true
     end
 
     it 'returns false if only some required scopes are included' do
-      filter = Rack::Auth::OCTanner::AuthenticationFilter.new [ scope_1, scope_2 ]
-      filter.authenticate_scopes(scope_1).should eq false
+      filter = Rack::Auth::OCTanner::AuthenticationFilter.new [ "public", "user.write", "admin.read" ]
+      filter.authenticate_scopes(0b1000000).should eq false
     end
   end
 
