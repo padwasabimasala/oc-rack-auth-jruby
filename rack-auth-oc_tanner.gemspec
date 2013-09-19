@@ -9,15 +9,14 @@ Gem::Specification.new do |gem|
   gem.summary = gem.description
   gem.homepage = 'https://github.com/octanner/rack-auth-oc_tanner'
 
-  gem.files = [
-    'lib/rack-auth-oc_tanner.rb',
-    'lib/rack/auth/oc_tanner.rb'
-  ]
+  gem.files = %w(README.md rack-auth-oc_tanner.gemspec)
+  gem.files += Dir.glob("lib/**/*.rb")
+  gem.files += Dir.glob("spec/**/*.rb")
   gem.require_paths = %w[lib]
 
-  gem.test_files = %w[]
+  gem.test_files = Dir.glob("spec/**/*")
 
   gem.add_dependency 'rack'
   gem.add_dependency 'simple-secrets', '~> 1.0.0'
-  gem.add_development_dependency 'guard-rspec'
+  gem.add_development_dependency 'rspec'
 end
