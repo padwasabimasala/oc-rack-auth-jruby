@@ -52,20 +52,20 @@ describe Rack::Auth::OCTanner::SmD do
 
   describe "#at" do
     it "supports negative numbers" do
-      subject.at(-1 * (2 ** 15)).should eq subject.min.to_i
+      subject.at(-1 * (2 ** 15)).should eq (subject.min.to_i * 1000)
     end
   end
 
   describe "#from" do
     it "should be less than the range" do
-      subject.from(Time.now.gmtime.to_i).should be < subject.range
+      subject.from(Time.now.gmtime.to_i * 1000).should be < subject.range
     end
   end
 
   describe "#now" do
     it "should be within one unit to Time.now" do
       at = subject.at subject.now
-      time = Time.now.gmtime.to_i
+      time = (Time.now.gmtime.to_i * 1000)
       (time - at).should be < subject.ms_per_unit
     end
   end
