@@ -36,8 +36,8 @@ class Rack::Auth::OCTanner::SmD
     date (range - 1)
   end
 
-  def date from
-    Time.at(at from)
+  def date units
+    Time.at(at(units) / MS_PER_SECOND)  # Convert from milliseconds to seconds
   end
 
   def from milliseconds
@@ -51,6 +51,6 @@ class Rack::Auth::OCTanner::SmD
   private
 
   def current_ms
-    Time.now.gmtime.to_i
+    Time.now.gmtime.to_f * MS_PER_SECOND  # Convert from seconds to milliseconds
   end
 end
